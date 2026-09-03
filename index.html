@@ -95,8 +95,8 @@
     animation: tilt 4.5s ease-in-out infinite;
   }
   @keyframes tilt{
-    0%, 100%{ transform: translateY(-5px) rotate(-1.4deg); }
-    50%{ transform: translateY(5px) rotate(1.4deg); }
+    0%, 100%{ transform: rotate(-2deg); }
+    50%{ transform: rotate(2deg); }
   }
   @media (prefers-reduced-motion: reduce){
     .tilt{ animation: none; }
@@ -136,6 +136,14 @@
   }
   input[type="email"]::placeholder{ color: var(--ink-soft); opacity: 0.75; }
   input[type="email"]:focus{ border-bottom-color: var(--ink); }
+  input[type="email"]:-webkit-autofill,
+  input[type="email"]:-webkit-autofill:hover,
+  input[type="email"]:-webkit-autofill:focus{
+    -webkit-text-fill-color: var(--ink);
+    -webkit-box-shadow: 0 0 0 1000px transparent inset;
+    box-shadow: 0 0 0 1000px transparent inset;
+    transition: background-color 9999s ease-in-out 0s;
+  }
 
   button{
     background: var(--ink);
