@@ -310,6 +310,8 @@
   .status{ text-align: center; margin-top: 12px; position: relative; z-index: 2; }
   .err{ font-size: 12px; color: #d98a7a; display: none; }
   .err.show{ display: block; }
+  .sending{ font-size: 12px; color: var(--periwinkle-dim); display: none; }
+  .sending.show{ display: block; }
   .confirm{ font-size: 12px; color: var(--periwinkle); display: none; }
   .confirm.show{ display: block; }
 
@@ -448,13 +450,14 @@
   </div>
 
   <div class="form-wrap">
-    <form id="notify-form" novalidate>
-      <input type="email" id="email" placeholder="email" autocomplete="email">
+    <form id="notify-form" action="https://formspree.io/f/mgaenreo" method="POST" novalidate>
+      <input type="email" name="email" id="email" placeholder="email" autocomplete="email">
       <button type="submit">Get early access</button>
     </form>
   </div>
   <div class="status">
     <p class="err" id="err">enter an email first</p>
+    <p class="sending" id="sending">sending...</p>
     <p class="confirm" id="confirm">you're on the list.</p>
   </div>
 </div>
@@ -498,21 +501,47 @@
   const form = document.getElementById('notify-form');
   const email = document.getElementById('email');
   const err = document.getElementById('err');
+  const sending = document.getElementById('sending');
   const confirm = document.getElementById('confirm');
 
   form.addEventListener('submit', function(e){
     e.preventDefault();
     const val = email.value.trim();
     const valid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(val);
+
+    err.classList.remove('show');
+    confirm.classList.remove('show');
+    sending.classList.remove('show');
+
     if(!valid){
+      err.textContent = 'enter an email first';
       err.classList.add('show');
-      confirm.classList.remove('show');
       return;
     }
-    err.classList.remove('show');
-    confirm.classList.add('show');
-    email.value = '';
-    email.blur();
+
+    sending.classList.add('show');
+
+    fetch(form.action, {
+      method: 'POST',
+      headers: { 'Accept': 'application/json' },
+      body: new FormData(form)
+    })
+    .then(function(res){
+      sending.classList.remove('show');
+      if(res.ok){
+        confirm.classList.add('show');
+        email.value = '';
+        email.blur();
+      } else {
+        err.textContent = 'something went wrong — try again';
+        err.classList.add('show');
+      }
+    })
+    .catch(function(){
+      sending.classList.remove('show');
+      err.textContent = 'something went wrong — try again';
+      err.classList.add('show');
+    });
   });
 
   email.addEventListener('input', function(){
