@@ -88,6 +88,11 @@
     font-size: clamp(24px, 4.5vw, 34px);
     margin: 0;
   }
+  .hint{
+    font-size: 12px;
+    color: var(--periwinkle);
+    margin: 10px 0 0;
+  }
 
   .node{ position: absolute; }
   @keyframes float{
@@ -127,6 +132,8 @@
     .star-node .star-icon{ animation: none; }
   }
 
+  .star-row{ display: contents; }
+
   .node-potassium{ top: 32%; right: 8%; }
   .node-magnesium{ top: 46%; left: 10%; }
   .node-sodium{ top: 60%; left: 50%; }
@@ -150,8 +157,8 @@
     position: absolute;
     top: 50%;
     left: 50%;
-    width: 96px;
-    height: 96px;
+    width: 60px;
+    height: 60px;
     transform: translate(-50%, -50%);
     border: 1.5px solid var(--periwinkle-dim);
     border-radius: 50%;
@@ -159,7 +166,7 @@
   .reveal-line-h{
     position: absolute;
     top: 50%;
-    left: calc(50% + 48px);
+    left: calc(50% + 30px);
     width: 64px;
     height: 1px;
     background: var(--periwinkle-dim);
@@ -167,7 +174,7 @@
   .reveal-line-v{
     position: absolute;
     top: 50%;
-    left: calc(50% + 112px);
+    left: calc(50% + 94px);
     width: 1px;
     height: 46px;
     background: var(--periwinkle-dim);
@@ -175,10 +182,11 @@
   .reveal-text{
     position: absolute;
     top: calc(50% + 46px);
-    left: calc(50% + 124px);
-    width: 75px;
+    left: calc(50% + 106px);
+    width: 150px;
     display: block;
     text-align: left;
+    white-space: normal;
     word-wrap: break-word;
     overflow-wrap: break-word;
   }
@@ -201,12 +209,29 @@
   /* potassium is mirrored: text sits left of the circle with a
      simple straight connector, no vertical bend */
   .node-potassium .reveal-line-v{ display: none; }
-  .node-potassium .reveal-line-h{ left: auto; right: calc(50% + 48px); }
+  .node-potassium .reveal-line-h{ left: auto; right: calc(50% + 30px); }
   .node-potassium .reveal-text{
     top: calc(50% - 6px);
     left: auto;
-    right: calc(50% + 122px);
+    right: calc(50% + 104px);
     text-align: right;
+  }
+
+  /* sodium: connector drops down from the circle first, then
+     runs right into the text, instead of right-then-down */
+  .node-sodium .reveal-line-v{
+    top: calc(50% + 30px);
+    left: 50%;
+    height: 46px;
+  }
+  .node-sodium .reveal-line-h{
+    top: calc(50% + 76px);
+    left: 50%;
+    width: 60px;
+  }
+  .node-sodium .reveal-text{
+    top: calc(50% + 40px);
+    left: calc(50% + 74px);
   }
 
   /* closing statement */
@@ -248,6 +273,10 @@
     outline: none;
   }
   input[type="email"]::placeholder{ color: var(--periwinkle-dim); }
+  input[type="email"]::selection{
+    background: transparent;
+    color: var(--white);
+  }
   input[type="email"]:-webkit-autofill,
   input[type="email"]:-webkit-autofill:hover,
   input[type="email"]:-webkit-autofill:focus{
@@ -255,6 +284,10 @@
     -webkit-box-shadow: 0 0 0 1000px transparent inset;
     box-shadow: 0 0 0 1000px transparent inset;
     transition: background-color 9999s ease-in-out 0s;
+  }
+  input[type="email"]:autofill{
+    background: transparent;
+    color: var(--white);
   }
   button{
     background: var(--periwinkle);
@@ -282,23 +315,59 @@
 
   @media (max-width: 760px){
     .constellation{ min-height: 0; margin-bottom: 20px; }
-    .hero-text{ position: static; transform: none; margin-bottom: 32px; }
-    .star-node{ display: none; }
-    .ingredients-mobile{ display: block !important; }
+    .hero-text{ position: static; transform: none; margin-bottom: 36px; }
+
+    .star-row{
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 15vw;
+      padding: 18px 30px;
+      border-radius: 999px;
+      border: 1.5px solid transparent;
+      width: fit-content;
+      margin: 0 auto;
+      transition: border-color 0.2s ease;
+    }
+    .star-row.expanded{ border-color: var(--periwinkle-dim); }
+    .star-node{ position: relative; top: auto; left: auto; right: auto; padding: 10px; margin: 0; }
+
+    /* individual per-star rings/connectors are replaced by the
+       shared pill above and the ordered list below */
+    .reveal-ring, .reveal-line-h, .reveal-line-v, .reveal-text{ display: none; }
   }
-  .ingredients-mobile{
-    display: none;
-    text-align: center;
-    font-size: 12px;
-    color: var(--periwinkle-dim);
-    margin: 0 0 20px;
+
+  .mobile-detail{ display: none; }
+  @media (max-width: 760px){
+    .mobile-detail{
+      display: block;
+      max-width: 320px;
+      margin: 0 auto 32px;
+      text-align: center;
+    }
+    .mobile-detail:empty{ display: none; margin: 0; }
+    .detail-item{ margin-bottom: 16px; }
+    .detail-item:last-child{ margin-bottom: 0; }
+    .detail-title{
+      display: block;
+      font-size: 13px;
+      font-weight: 700;
+      color: #ffc61e;
+      margin: 0 0 4px;
+    }
+    .detail-body{
+      display: block;
+      font-size: 13px;
+      color: var(--periwinkle-dim);
+      line-height: 1.5;
+    }
   }
 
   @media (max-width: 480px){
     .page{ padding: 48px 20px 40px; }
-    form{ flex-direction: column; border-radius: 18px; padding: 14px; gap: 10px; }
-    input[type="email"]{ width: 100%; text-align: center; }
-    button{ width: 100%; }
+    form{ padding: 4px 4px 4px 14px; }
+    input[type="email"]{ font-size: 12px; }
+    button{ padding: 0 14px; font-size: 11px; }
   }
 </style>
 </head>
@@ -326,8 +395,10 @@
     <div class="hero-text">
       <p class="eyebrow">First up</p>
       <h1>nightly ritual</h1>
+      <p class="hint">click stars to read about active ingredients</p>
     </div>
 
+    <div class="star-row">
     <button class="star-node node-potassium" type="button" aria-label="Potassium">
       <svg class="star-icon" viewBox="0 0 24 24" fill="none"><path d="M12 2l1.8 7.2L21 11l-7.2 1.8L12 20l-1.8-7.2L3 11l7.2-1.8L12 2z" fill="#ffc61e"/></svg>
       <span class="reveal">
@@ -366,9 +437,10 @@
         </span>
       </span>
     </button>
+    </div>
   </div>
 
-  <p class="ingredients-mobile">magnesium glycinate · potassium · sodium</p>
+  <div class="mobile-detail" id="mobile-detail"></div>
 
   <div class="closing">
     <p class="closing-line">Wind down formula, built on <span class="accent">recovery</span>.</p>
@@ -378,7 +450,7 @@
   <div class="form-wrap">
     <form id="notify-form" novalidate>
       <input type="email" id="email" placeholder="email" autocomplete="email">
-      <button type="submit">Build your base</button>
+      <button type="submit">Get early access</button>
     </form>
   </div>
   <div class="status">
@@ -388,15 +460,39 @@
 </div>
 
 <script>
+  const ingredientData = {
+    magnesium: { title: 'magnesium glycinate:', body: 'calms the nervous system and eases muscles for deeper, uninterrupted sleep' },
+    potassium: { title: 'potassium:', body: 'balances fluids and supports muscle + nerve function overnight' },
+    sodium: { title: 'sodium:', body: 'locks in hydration so recovery actually happens while you rest' }
+  };
+  const ingredientOrder = ['magnesium', 'potassium', 'sodium'];
+  const mobileDetail = document.getElementById('mobile-detail');
+  const starRow = document.querySelector('.star-row');
+  const mobileMQ = window.matchMedia('(max-width: 760px)');
+
+  function renderMobileList(){
+    let html = '';
+    ingredientOrder.forEach(key => {
+      const d = ingredientData[key];
+      html += '<div class="detail-item"><span class="detail-title">' + d.title +
+        '</span><span class="detail-body">' + d.body + '</span></div>';
+    });
+    mobileDetail.innerHTML = html;
+  }
+
   const starNodes = document.querySelectorAll('.star-node');
   starNodes.forEach(node => {
     node.addEventListener('click', function(e){
       e.stopPropagation();
-      node.classList.toggle('active');
+      if(mobileMQ.matches){
+        const opening = !starRow.classList.contains('expanded');
+        starRow.classList.toggle('expanded', opening);
+        starNodes.forEach(n => n.classList.toggle('active', opening));
+        if(opening){ renderMobileList(); } else { mobileDetail.innerHTML = ''; }
+      } else {
+        node.classList.toggle('active');
+      }
     });
-  });
-  document.addEventListener('click', function(){
-    starNodes.forEach(n => n.classList.remove('active'));
   });
 
   const form = document.getElementById('notify-form');
